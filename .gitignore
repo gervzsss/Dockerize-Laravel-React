@@ -1,0 +1,22 @@
+.github
+
+# Environment files (keep examples)
+.env
+.env.*
+!.env.docker.example
+!.env.example
+
+# Docker volumes and data
+docker-volumes/
+*.sql
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

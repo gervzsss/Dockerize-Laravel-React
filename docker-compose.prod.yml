@@ -1,0 +1,89 @@
+# PRODUCTION ENVIRONMENT
+# WARNING: This file contains hardcoded credentials for production.
+# Update these values before deploying to production with secure credentials.
+# DO NOT commit production secrets to version control.
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: todo-app-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: todo_app
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: todo_user
+      MYSQL_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "4306:3306"
+
+  # Laravel Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: todo-app-backend
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_NAME: "Todo App"
+      APP_ENV: production
+      APP_KEY: base64:7UUj7Y5rHrVzOhA2op5EiE6V2bvnJjMKWTFL9jNm1mA=
+      APP_DEBUG: false
+      APP_URL: http://localhost:8000
+      
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: todo_app
+      DB_USERNAME: todo_user
+      DB_PASSWORD: secret
+      
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: file
+      SESSION_LIFETIME: 120
+      
+      SANCTUM_STATEFUL_DOMAINS: localhost:3000,localhost
+      SESSION_DOMAIN: localhost
+    volumes:
+      - ./backend/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - todo-network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000/api
+    container_name: todo-app-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local

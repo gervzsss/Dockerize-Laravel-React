@@ -1,0 +1,93 @@
+# DEVELOPMENT ENVIRONMENT
+# This file contains development-specific configuration with debug mode enabled.
+# Uses different ports than production to avoid conflicts.
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: todo-app-db-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: todo_app
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: todo_user
+      MYSQL_PASSWORD: secret
+    volumes:
+      - db_data_dev:/var/lib/mysql
+    ports:
+      - "4306:3306"
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Laravel Backend (Development mode with hot reload)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: todo-app-backend-dev
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_NAME: "Todo App"
+      APP_ENV: local
+      APP_KEY: base64:7UUj7Y5rHrVzOhA2op5EiE6V2bvnJjMKWTFL9jNm1mA=
+      APP_DEBUG: true
+      APP_URL: http://localhost:8000
+      
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: todo_app
+      DB_USERNAME: todo_user
+      DB_PASSWORD: secret
+      
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: file
+      SESSION_LIFETIME: 120
+      
+      SANCTUM_STATEFUL_DOMAINS: localhost:5173,localhost:3000,localhost
+      SESSION_DOMAIN: localhost
+    volumes:
+      - ./backend:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - todo-network
+
+  # Frontend (Vite Dev Server with Hot Reload)
+  frontend:
+    image: node:20-alpine
+    container_name: todo-app-frontend-dev
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+    driver: bridge
+
+volumes:
+  db_data_dev:
+    driver: local
