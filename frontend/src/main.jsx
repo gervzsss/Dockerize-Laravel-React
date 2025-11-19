@@ -8,7 +8,7 @@ import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import Cart from './pages/Cart.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
+import { CartProvider } from './context/CartContext.jsx';
 import AuthModal from './components/AuthModal.jsx';
 
 function AppContent() {
@@ -21,14 +21,7 @@ function AppContent() {
         <Route path="/products" element={<Products />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
       <AuthModal
         isOpen={isAuthModalOpen}
@@ -43,7 +36,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>

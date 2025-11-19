@@ -84,7 +84,7 @@ export default function Header() {
     if (user?.name) {
       return user.name.split(' ')[0]; // First name only
     }
-    return 'User';
+    return user?.email?.split('@')[0] || 'Guest';
   };
 
   const navLinks = [

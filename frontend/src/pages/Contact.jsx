@@ -9,7 +9,7 @@ export default function Contact() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50">
+      <main className="pt-20 min-h-screen bg-gray-50">
         {/* Hero Section */}
         <ContactHero />
 

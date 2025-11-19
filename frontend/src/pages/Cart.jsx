@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import api from '../api/axios';
@@ -11,8 +11,7 @@ export default function Cart() {
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  const { isAuthenticated, openAuthModal } = useAuth();
 
   const TAX_RATE = 0.12; // 12% tax
 
@@ -107,7 +106,7 @@ export default function Cart() {
   const calculateSelectedSubtotal = () => {
     return cartItems
       .filter((item) => selectedItems.has(item.id))
-      .reduce((total, item) => total + item.price * item.quantity, 0);
+      .reduce((total, item) => total + (item.line_total || 0), 0);
   };
 
   const calculateTax = () => {
@@ -137,7 +136,9 @@ export default function Cart() {
     );
   }
 
-  // Login Required
+
+
+  // Empty Cart or Guest User
   if (!isAuthenticated) {
     return (
       <>
@@ -150,10 +151,10 @@ export default function Cart() {
                 <svg className="w-24 h-24 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                 </svg>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Please Login to View Cart</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Please log in to view your cart</h2>
                 <p className="text-gray-600 mb-6">You need to be logged in to add items and view your cart.</p>
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={() => openAuthModal('login')}
                   className="bg-[#30442B] text-white px-6 py-3 cursor-pointer rounded-lg hover:bg-[#405939] transition-colors"
                 >
                   Login or Sign Up
@@ -262,10 +263,20 @@ export default function Cart() {
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div>
                             <h3 className="font-semibold text-lg text-[#30442B]">{item.name}</h3>
-                            <p className="text-sm text-neutral-500">₱{item.price.toFixed(2)} each</p>
+                            {item.variant_name && (
+                              <p className="text-sm text-neutral-600 mt-1">{item.variant_name}</p>
+                            )}
+                            <p className="text-sm text-neutral-500">
+                              ₱{item.unit_price.toFixed(2)} each
+                              {item.price_delta !== 0 && (
+                                <span className="ml-1 text-neutral-400">
+                                  ({item.price_delta > 0 ? '+' : ''}₱{item.price_delta.toFixed(2)})
+                                </span>
+                              )}
+                            </p>
                           </div>
                           <span className="text-lg font-semibold text-[#30442B]">
-                            ₱{(item.price * item.quantity).toFixed(2)}
+                            ₱{(item.line_total || 0).toFixed(2)}
                           </span>
                         </div>
                         <div className="mt-4 flex flex-wrap items-center gap-3">

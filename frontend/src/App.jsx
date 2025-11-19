@@ -84,7 +84,7 @@ export default function App() {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      // User will remain on current page after logout
     } catch (err) {
       console.error('Logout error:', err);
     }

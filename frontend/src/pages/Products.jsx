@@ -95,7 +95,7 @@ export default function Products() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="pt-20 min-h-screen bg-gray-50">
         {/* Header Section with Search */}
         <div className="w-full bg-[#30442B] py-6">
           <div className="container mx-auto px-4">

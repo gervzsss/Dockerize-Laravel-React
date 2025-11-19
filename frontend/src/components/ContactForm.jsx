@@ -12,6 +12,7 @@ export default function ContactForm() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [threadId, setThreadId] = useState(null);
 
   const validateForm = () => {
     const newErrors = {};
@@ -64,8 +65,9 @@ export default function ContactForm() {
     setIsSubmitting(true);
 
     try {
-      await api.post('/contact', formData);
+      const response = await api.post('/contact', formData);
       setSubmitSuccess(true);
+      setThreadId(response.data.thread_id);
       setFormData({
         name: '',
         email: '',
@@ -74,10 +76,11 @@ export default function ContactForm() {
       });
       setErrors({});
 
-      // Hide success message after 5 seconds
+      // Hide success message after 8 seconds
       setTimeout(() => {
         setSubmitSuccess(false);
-      }, 5000);
+        setThreadId(null);
+      }, 8000);
     } catch (error) {
       console.error('Error submitting contact form:', error);
       setErrors({
@@ -100,6 +103,11 @@ export default function ContactForm() {
             <div className="mt-6 rounded-2xl bg-green-50 border border-green-200 p-4 text-green-800">
               <p className="font-semibold">Thank you for your message!</p>
               <p className="text-sm mt-1">We'll respond within 24 hours.</p>
+              {threadId && (
+                <p className="text-xs mt-2 text-green-700">
+                  Reference ID: <span className="font-mono font-semibold">{threadId}</span>
+                </p>
+              )}
             </div>
           )}
 

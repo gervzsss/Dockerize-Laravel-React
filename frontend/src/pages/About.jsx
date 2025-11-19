@@ -9,7 +9,7 @@ export default function About() {
   return (
     <>
       <Header />
-      <main className="min-h-screen">
+      <main className="pt-20 min-h-screen">
         <AboutHero />
         <OurStory />
         <OurValues />

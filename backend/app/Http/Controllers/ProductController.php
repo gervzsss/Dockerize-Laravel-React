@@ -12,7 +12,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::where('is_active', true);
+        $query = Product::where('is_active', true)->with('activeVariants');
         
         // Filter by category if provided
         if ($request->has('category') && $request->category !== '') {
@@ -33,7 +33,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::with('activeVariants')->find($id);
         
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
