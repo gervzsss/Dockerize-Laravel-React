@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InquiryThread;
+use App\Models\ThreadMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -21,21 +23,39 @@ class ContactController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
+        $user = Auth::user();
+
+        // Create inquiry thread
+        $thread = InquiryThread::create([
+            'user_id' => $user?->id,
+            'guest_email' => $user ? null : $validated['email'],
+            'guest_name' => $user ? null : $validated['name'],
+            'subject' => $validated['subject'],
+            'status' => 'pending',
+            'last_message_at' => now(),
+        ]);
+
+        // Create the initial message
+        ThreadMessage::create([
+            'thread_id' => $thread->id,
+            'sender_type' => $user ? 'user' : 'guest',
+            'sender_id' => $user?->id,
+            'sender_name' => $validated['name'],
+            'sender_email' => $validated['email'],
+            'message' => $validated['message'],
+        ]);
+
         // Log the contact form submission
         Log::info('Contact form submission', [
+            'thread_id' => $thread->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
             'subject' => $validated['subject'],
         ]);
 
-        // TODO: Implement email sending logic
-        // Example:
-        // Mail::to('admin@coffeest.com')->send(new ContactFormMail($validated));
-
-        // For now, just return success
         return response()->json([
             'message' => 'Thank you for contacting us! We will get back to you within 24 hours.',
-            'data' => $validated,
+            'thread_id' => $thread->id,
         ], 201);
     }
 }

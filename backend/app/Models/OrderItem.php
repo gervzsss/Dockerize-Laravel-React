@@ -5,36 +5,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CartItem extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'cart_id',
+        'order_id',
         'product_id',
         'variant_id',
         'variant_name',
-        'quantity',
-        'unit_price',
         'price_delta',
+        'product_name',
+        'unit_price',
+        'quantity',
+        'line_total',
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'unit_price' => 'float',
         'price_delta' => 'float',
+        'unit_price' => 'float',
+        'quantity' => 'integer',
+        'line_total' => 'float',
     ];
 
     /**
-     * Get the cart that owns the cart item.
+     * Get the order that owns the order item.
      */
-    public function cart()
+    public function order()
     {
-        return $this->belongsTo(Cart::class);
+        return $this->belongsTo(Order::class);
     }
 
     /**
-     * Get the product associated with the cart item.
+     * Get the product associated with the order item.
      */
     public function product()
     {
@@ -42,18 +45,10 @@ class CartItem extends Model
     }
 
     /**
-     * Get the variant associated with the cart item.
+     * Get the variant associated with the order item.
      */
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
-    }
-
-    /**
-     * Calculate the total price for this cart item.
-     */
-    public function getLineTotalAttribute(): float
-    {
-        return ($this->unit_price + $this->price_delta) * $this->quantity;
     }
 }

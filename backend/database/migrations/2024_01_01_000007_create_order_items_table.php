@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('restrict');
-            $table->foreignId('variant_id')->nullable()->constrained('product_variants')->onDelete('restrict');
-            $table->string('variant_name', 255)->nullable();
+            $table->foreignId('variant_id')->nullable()->constrained('product_variants')->onDelete('set null');
+            $table->string('variant_name')->nullable();
             $table->decimal('price_delta', 10, 2)->default(0.00);
-            $table->string('product_name', 255);
+            $table->string('product_name');
             $table->decimal('unit_price', 10, 2);
-            $table->integer('quantity')->unsigned()->default(1);
+            $table->unsignedInteger('quantity')->default(1);
             $table->decimal('line_total', 10, 2);
             $table->timestamps();
             

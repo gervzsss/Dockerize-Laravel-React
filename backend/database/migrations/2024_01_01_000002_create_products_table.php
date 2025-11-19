@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name', 160);
             $table->text('description');
             $table->decimal('price', 10, 2);
-            $table->string('image_url', 255)->nullable();
+            $table->string('image_url')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             

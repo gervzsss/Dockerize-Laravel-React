@@ -16,10 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('guest_email', 190)->nullable();
             $table->string('guest_name', 190)->nullable();
-            $table->string('subject', 255);
+            $table->string('subject');
             $table->enum('status', ['pending', 'responded', 'done'])->default('pending');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
             $table->timestamp('last_message_at')->useCurrent();
             $table->timestamp('admin_last_viewed_at')->nullable();
             
