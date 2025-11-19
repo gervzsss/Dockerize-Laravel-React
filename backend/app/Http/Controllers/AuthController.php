@@ -19,12 +19,22 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:50',
         ]);
 
+        // Split name into first_name and last_name
+        $nameParts = explode(' ', $validated['name'], 2);
+        $firstName = $nameParts[0];
+        $lastName = $nameParts[1] ?? '';
+
         $user = User::create([
-            'name' => $validated['name'],
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'address' => $validated['address'] ?? null,
+            'phone' => $validated['phone'] ?? null,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

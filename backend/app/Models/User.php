@@ -20,9 +20,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
+        'address',
+        'phone',
     ];
 
     /**
@@ -46,13 +49,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Get the todos for the user.
-     */
-    public function todos(): HasMany
-    {
-        return $this->hasMany(Todo::class);
     }
 }

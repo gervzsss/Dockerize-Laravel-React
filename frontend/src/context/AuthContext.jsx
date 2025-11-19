@@ -7,6 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
 
   useEffect(() => {
     if (token) {
@@ -73,6 +75,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const openAuthModal = (mode = 'login') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
   const value = {
     user,
     token,
@@ -81,6 +92,10 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     isAuthenticated: !!token,
+    isAuthModalOpen,
+    authModalMode,
+    openAuthModal,
+    closeAuthModal,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

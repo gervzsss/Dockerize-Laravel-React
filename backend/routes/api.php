@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TodoController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,12 +21,24 @@ use Illuminate\Support\Facades\Route;
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public Product Routes
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
+
+// Public Contact Route
+Route::post('/contact', [ContactController::class, 'store']);
+
 // Protected Routes (Require Authentication)
 Route::middleware('auth:sanctum')->group(function () {
     // Auth Routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-    
-    // Todo API Resource Routes
-    Route::apiResource('todos', TodoController::class);
+
+    // Cart Routes
+    Route::get('/cart/count', [CartController::class, 'count']);
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{id}', [CartController::class, 'update']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::delete('/cart', [CartController::class, 'clear']);
 });

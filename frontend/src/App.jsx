@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from './api/axios';
 import { useAuth } from './context/AuthContext';
+import Header from './components/Header';
+import homeHeaderImg from './assets/home_header.png';
 
 // Todo type for reference:
 // { id: number, text: string, completed: boolean }
@@ -89,49 +91,57 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 flex flex-col items-center p-8">
-      <div className="w-full max-w-md flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">To-Do List</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-700">Hello, {user?.name}!</span>
-          <button
-            onClick={handleLogout}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 cursor-pointer"
-          >
-            Logout
-          </button>
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50">
+        {/* Hero Section */}
+        <div className="relative h-64 md:h-80 overflow-hidden">
+          <img
+            src={homeHeaderImg}
+            alt="Coffee St. Home"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+            <h1 className="text-4xl md:text-5xl font-outfit font-bold text-white text-center px-6">
+              Welcome to Coffee St.
+            </h1>
+          </div>
         </div>
-      </div>
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full max-w-md">
-          {error}
-        </div>
-      )}
+        <div className="flex flex-col items-center p-8 pt-12">
+          <div className="w-full max-w-md flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold">My To-Do List</h2>
+          </div>
 
-      <form onSubmit={addTodo} className="flex gap-2 mb-6">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Add a new task..."
-          className="px-3 py-2 border rounded shadow focus:outline-none"
-          aria-label="Add new todo"
-          disabled={loading}
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 cursor-pointer"
-          disabled={loading}
-        >
-          Add
-        </button>
-      </form>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full max-w-md">
+              {error}
+            </div>
+          )}
 
-      {loading ? (
-        <div className="text-gray-500">Loading...</div>
-      ) : (
-        <ul className="w-full max-w-md">
+          <form onSubmit={addTodo} className="flex gap-2 mb-6">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Add a new task..."
+              className="px-3 py-2 border rounded shadow focus:outline-none"
+              aria-label="Add new todo"
+              disabled={loading}
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 cursor-pointer"
+              disabled={loading}
+            >
+              Add
+            </button>
+          </form>
+
+          {loading ? (
+            <div className="text-gray-500">Loading...</div>
+          ) : (
+            <ul className="w-full max-w-md">
           {todos.length === 0 && (
             <li className="text-gray-500 text-center">No tasks yet!</li>
           )}
@@ -166,8 +176,10 @@ export default function App() {
               </button>
             </li>
           ))}
-        </ul>
-      )}
-    </main>
+            </ul>
+          )}
+        </div>
+      </main>
+    </>
   );
 }
