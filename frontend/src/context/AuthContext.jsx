@@ -43,12 +43,14 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
-  const signup = async (name, email, password, password_confirmation) => {
+  const signup = async (name, email, password, password_confirmation, address, phone) => {
     const response = await api.post('/signup', {
       name,
       email,
       password,
       password_confirmation,
+      address,
+      phone,
     });
     const { user, token } = response.data;
     

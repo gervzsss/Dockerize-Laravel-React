@@ -79,7 +79,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
     try {
       const fullName = `${firstName} ${lastName}`;
-      await signup(fullName, signupEmail, signupPassword, passwordConfirmation);
+      await signup(fullName, signupEmail, signupPassword, passwordConfirmation, address, phone);
       onClose();
       resetForms();
     } catch (err) {
